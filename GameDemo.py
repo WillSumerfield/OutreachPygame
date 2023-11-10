@@ -78,7 +78,7 @@ class Platform:
 platforms = [
     Platform(150,   SCREEN_HEIGHT -  50, 100, 20),
     Platform(350,   SCREEN_HEIGHT -  50, 100, 20),
-    Platform(540,   SCREEN_HEIGHT -  50, 100, 20),
+    Platform(550,   SCREEN_HEIGHT -  50, 100, 20),
     Platform(750,   SCREEN_HEIGHT -  50, 100, 20),  
     Platform(950,   SCREEN_HEIGHT -  50, 100, 20),  
 ]
@@ -103,7 +103,7 @@ while running:
             running = False
 
     # Remove platforms which go off the screen, and generate new platforms as needed
-    platform_dist = platforms[0].x + platforms[0].width;
+    platform_dist = platforms[0].x + platforms[0].width
     if platform_dist < 0:
         del platforms[0]
         platforms += [generate_platform(platform_dist)]
@@ -129,7 +129,6 @@ while running:
 
     # The player did collide with a platform when we tried moving it - move it one space at a time until it collides with the platform.
     else: 
-        print("Y-Dist: ", y_dist)
         while not player.platform_collision(platforms, 0, math.copysign(1, y_dist)): # Keep moving the player until they collide with the platform
             player.y += math.copysign(1, y_dist)
 
@@ -143,12 +142,12 @@ while running:
     
     # The player did collide with a platform when we tried moving it - move it one space at a time until it collides with the platform.
     else: 
-        while not player.platform_collision(platforms, 0, math.copysign(1, x_dist)): # Keep moving the player until they collide with the platform
+        while not player.platform_collision(platforms, math.copysign(1, x_dist), 0): # Keep moving the player until they collide with the platform
             for platform in platforms:
                 platform.x -= math.copysign(1, x_dist)
 
-    # If the player fell off the map, quite the game
-    if (player.y < 0):
+    # If the player fell off the map, quit the game
+    if (player.y > SCREEN_HEIGHT):
         running = False
 
     # Draw the background
