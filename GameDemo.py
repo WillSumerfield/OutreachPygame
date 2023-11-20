@@ -7,15 +7,14 @@ import math
 # ---------- Function Definitions ----------
 
 # Do general initialization stuff here
-def initialize(screen_width, screen_height, ):
+def initialize(screen_width, screen_height):
 
     # Initialize Pygame
     pygame.init()
 
     # Initialize the screen
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Simple Platformer Game")
-
+   
     return screen
 
 # Creates a new platform
@@ -30,10 +29,10 @@ def draw(screen, platforms, player):
 
     # Draw the platforms
     for platform in platforms:
-        pygame.draw.rect(surface=screen, color=(0, 0, 0), rect=(platform.x, platform.y, platform.width, platform.height))
+        pygame.draw.rect(surface=screen, color=(0, 0, 0), rect=pygame.Rect(int(platform.x), int(platform.y), platform.width, platform.height))
 
     # Draw the player
-    pygame.draw.rect(surface=screen, color=(255, 0, 0), rect=(player.x, player.y, player.width, player.height))
+    pygame.draw.rect(surface=screen, color=(255, 0, 0), rect=pygame.Rect(int(player.x), int(player.y), player.width, player.height))
 
     # Update the screen
     pygame.display.flip()
@@ -48,19 +47,19 @@ def exit_pressed():
         if event.type == pygame.QUIT:
 
             # Return "True" to show that we should close the game
-            return True 
-        
+            return True
+       
     # Return "False" to show that we should keep the game running
-    return False 
+    return False
 
 # If a platforms goes off the screen, remove it!
 def remove_offscreen_platforms(platforms):
 
     # How far a platform is from the left side of the screen
-    platform_dist = platforms[0].x + platforms[0].width 
+    platform_dist = platforms[0].x + platforms[0].width
 
     # If the platform is fully offscreen, delete it!
-    if platform_dist < 0: 
+    if platform_dist < 0:
         del platforms[0] # Delete the platform
         platforms += [generate_platform(platform_dist)] # Generate a new platform!
 
@@ -95,7 +94,7 @@ class Player:
             # If one rectangle is above other
             if (self.y+1 + y_offset > platform.y + platform.height) or (platform.y+1 > self.y + self.height + y_offset):
                 continue
-        
+       
             # The platforms are overlapping
             return True
 
@@ -131,7 +130,7 @@ class Player:
             self.y += y_dist # If it didn't collide, great! Move the player vertically.
 
         # The player did collide with a platform when we tried moving it - move it one space at a time until it collides with the platform.
-        else: 
+        else:
             while not self.platform_collision(platforms, 0, math.copysign(1, y_dist)): # Keep moving the player until they collide with the platform
                 self.y += math.copysign(1, y_dist)
 
@@ -141,10 +140,10 @@ class Player:
 
             # If it didn't collide, great! Move each platform horizontally
             for platform in platforms:
-                platform.x -= x_dist 
-        
+                platform.x -= x_dist
+       
         # The player did collide with a platform when we tried moving it - move it one space at a time until it collides with the platform.
-        else: 
+        else:
             while not self.platform_collision(platforms, math.copysign(1, x_dist), 0): # Keep moving the player until they collide with the platform
                 for platform in platforms:
                     platform.x -= math.copysign(1, x_dist)
@@ -153,20 +152,20 @@ class Player:
     def is_grounded(self):
 
         # Check if there is a platform below the player
-        if player.platform_below(platforms): 
+        if player.platform_below(platforms):
 
             # If they're on the ground, they shouldn't be falling
-            player.vely = 0 
+            player.vely = 0
 
             # The player is on the ground
             return True
-        
+       
         # The player is not on the ground
         return False
 
 # The platforms
 class Platform:
-    
+   
     # Create a new platform with the given properties
     def __init__(self, x, y, width, height):
         self.x = x
@@ -243,7 +242,3 @@ while running:
 
     # Draw the player, the platforms, and the background to the screen. If you add new things to your game, update this function so that you can see them!
     draw(screen=screen, platforms=platforms, player=player)
-
-# Clean up and quit
-pygame.quit()
-sys.exit()
