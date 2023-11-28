@@ -2,7 +2,7 @@
 import pygame
 import sys
 import math
-
+import random
 
 # ---------- Function Definitions ----------
 
@@ -14,7 +14,7 @@ def initialize(screen_width, screen_height):
 
     # Initialize the screen
     screen = pygame.display.set_mode((screen_width, screen_height))
-   
+
     return screen
 
 # Creates a new platform
@@ -48,7 +48,7 @@ def exit_pressed():
 
             # Return "True" to show that we should close the game
             return True
-       
+
     # Return "False" to show that we should keep the game running
     return False
 
@@ -64,6 +64,8 @@ def remove_offscreen_platforms(platforms):
         platforms += [generate_platform(platform_dist)] # Generate a new platform!
 
     return platforms
+
+# -------------------------------------------
 
 
 # ------------ Class Definitions ------------
@@ -90,11 +92,11 @@ class Player:
             # If one is on left side of other
             if (self.x + x_offset > platform.x + platform.width) or (platform.x > self.x + self.width + x_offset):
                 continue
- 
+
             # If one rectangle is above other
             if (self.y+1 + y_offset > platform.y + platform.height) or (platform.y+1 > self.y + self.height + y_offset):
                 continue
-       
+
             # The platforms are overlapping
             return True
 
@@ -122,7 +124,7 @@ class Player:
     def move(self, platforms, delta_time):
 
         # Apply gravity
-        player.vely = player.vely+(GRAVITY*delta_time)
+        self.vely = self.vely+(GRAVITY*delta_time)
 
         # Move the player vertically
         y_dist = self.vely*delta_time # The total vertical movement to move the player
@@ -141,12 +143,26 @@ class Player:
             # If it didn't collide, great! Move each platform horizontally
             for platform in platforms:
                 platform.x -= x_dist
-       
+
         # The player did collide with a platform when we tried moving it - move it one space at a time until it collides with the platform.
         else:
-            while not self.platform_collision(platforms, math.copysign(1, x_dist), 0): # Keep moving the player until they collide with the platform
+            # For each pixel we need to move the player...
+            for pixel in range(math.ceil(abs(x_dist))):
+
+                # Find the distance to move the player
+                dist = 0
+                if x_dist > 1:
+                    dist = math.copysign(1, x_dist)
+                else:
+                    dist = x_dist
+
+                # Move each platform
                 for platform in platforms:
-                    platform.x -= math.copysign(1, x_dist)
+                    platform.x -= dist
+
+                # If the player is touching a platform, move it backwards
+                if self.platform_collision(platforms, 0, 0):
+                    self.x -= dist
 
     # Returns True/False if the player is on the ground or not
     def is_grounded(self):
@@ -159,13 +175,13 @@ class Player:
 
             # The player is on the ground
             return True
-       
+
         # The player is not on the ground
         return False
 
 # The platforms
 class Platform:
-   
+
     # Create a new platform with the given properties
     def __init__(self, x, y, width, height):
         self.x = x
@@ -188,8 +204,9 @@ class Clock:
         self.previous_time = current_time # Update the previous time
         return delta_time
 
+# -------------------------------------------
 
-# Set up constant values here. Change they as you'd like!
+# Set up constant values here. Change them as you'd like!
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 400
 BACKGROUND_COLOR = (135, 206, 235)  # Light Blue
 GRAVITY = 0.001
@@ -205,8 +222,8 @@ platforms = [
     Platform(150,   SCREEN_HEIGHT -  50, 100, 20),
     Platform(350,   SCREEN_HEIGHT -  50, 100, 20),
     Platform(550,   SCREEN_HEIGHT -  50, 100, 20),
-    Platform(750,   SCREEN_HEIGHT -  50, 100, 20),  
-    Platform(950,   SCREEN_HEIGHT -  50, 100, 20),  
+    Platform(750,   SCREEN_HEIGHT -  50, 100, 20),
+    Platform(950,   SCREEN_HEIGHT -  50, 100, 20),
 ]
 
 # Create the clock timer
@@ -238,6 +255,10 @@ while running:
 
     # If the player fell off the map, quit the game
     if (player.y > SCREEN_HEIGHT):
+        running = False
+
+    # If the player was pushed off the map, quit the game
+    if (player.x < -player.width):
         running = False
 
     # Draw the player, the platforms, and the background to the screen. If you add new things to your game, update this function so that you can see them!
