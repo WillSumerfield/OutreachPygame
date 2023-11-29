@@ -42,7 +42,7 @@ Underneath the code where we check for the spacebar being pressed (for jumping):
        player.vely = player.jump_power # Increase the player's y velocity by their jump power
 ```
 
-add a new check for another keypress, like right arrow:
+add a new check for pressing the right arrow button. If it is pressed, increase the player's speed:
 
 ```
     if keys[pygame.K_SPACE] and grounded: # If the player is on the ground and presses space, let them jump
